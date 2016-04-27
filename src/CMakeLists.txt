@@ -1,0 +1,5 @@
+add_subdirectory(animtool)
+add_subdirectory(aqmapgen)
+add_subdirectory(aqnavmapgen)
+add_subdirectory(aqsc)
+add_subdirectory(pngrim)
