@@ -1,7 +1,7 @@
 # aqmodtools
 Some tools for Aquaria modding
 
-We use these to automate some tasks during out Aquaria sequel mod development - see http://www.bit-blot.com/forum/index.php?topic=4349.0 for more details on the progress.
+We use these to automate some tasks for our Aquaria sequel mod development - see http://www.bit-blot.com/forum/index.php?topic=4349.0 for more details on the progress.
 
 # Tools overview:
 
@@ -14,7 +14,7 @@ We use these to automate some tasks during out Aquaria sequel mod development - 
 Turns a map template file (back & write only PNG) into a PNG suitable for inclusion as world map tile.
 Basically turns black into transparent and applies a slight blur to smooth edges.
 
-### aqnapmapgen
+### aqnavmapgen
 
 Reads in a map XML file and outputs a Lua script file, ready to be loaded by my advanced pathfinding system.
 
