@@ -183,7 +183,7 @@ void forEachKeyframeInAnim(T& f, const std::string& animname)
 			f(key);
 	}
 	else
-		warn("Animation not found: %s", animname);
+		warn("Animation not found: %s", animname.c_str());
 }
 
 class KeyframeModifier

@@ -5,6 +5,8 @@
 #include <string>
 #include <zlib/zlib.h>
 
+#include <unistd.h>
+
 #define CHUNK 16384
 
 static int unpackFile(FILE *source, FILE *dest)

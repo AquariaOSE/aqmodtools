@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 			}
 		}
 		while (x < maxx);
-		linemax = std::max(linemax, open[y].size());
+		linemax = std::max(linemax, (unsigned)open[y].size());
 	}
 	printf("open lines: %u; linemax: %u\n", openlines, linemax);
 
