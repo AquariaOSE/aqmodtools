@@ -5,7 +5,9 @@
 #include <string>
 #include <zlib/zlib.h>
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #define CHUNK 16384
 
