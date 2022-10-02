@@ -3,7 +3,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <string>
-#include <zlib/zlib.h>
+#include <miniz.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -125,7 +125,7 @@ static void oops(const char *s)
 {
     printf("ERROR: %s\n", s);
 #if _WIN32
-    printf("--- Press enter key to exit ---\n"); // linux users will probably not want this
+    printf("--- Press any key to exit ---\n"); // linux users will probably not want this
 #endif
     getchar();
     exit(1);

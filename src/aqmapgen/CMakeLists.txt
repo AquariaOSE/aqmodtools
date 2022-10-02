@@ -5,4 +5,4 @@ Utils.h
 Vector.h
 )
 
-target_link_libraries(aqmapgen imagepng)
+target_link_libraries(aqmapgen deps)

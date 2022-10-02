@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <algorithm>
-#include "ImagePNG.h"
+#include "Image.h"
 
 static unsigned shuf[] = { 0, 1, 2 };
 
@@ -29,7 +29,7 @@ static void doBlockRow(Image& img, unsigned xs, unsigned ys, const unsigned c3)
 
 static void doSeparator(Image& img, const unsigned y, unsigned c)
 {
-    unsigned x = 0; 
+    unsigned x = 0;
     for(unsigned b = 0; b < blocksPerRow; ++b)
     {
         const unsigned cc = 0xff000000 | (c << (8 * shuf[2]));

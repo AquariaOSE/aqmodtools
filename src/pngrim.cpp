@@ -2,14 +2,15 @@
 /* This code is released into the public domain. */
 
 #include <algorithm>
-#include "ImagePNG.h"
+#include <string>
+#include "Image.h"
 #include "Matrix.h"
 
 
 struct Pos
 {
-	Pos(unsigned xx, unsigned yy, unsigned n) : x(xx), y(yy), nb(n) {}
-	unsigned x, y, nb;
+	Pos(size_t xx, size_t yy, size_t n) : x(xx), y(yy), nb(n) {}
+	size_t x, y, nb;
 
 	inline bool operator< (const Pos& p) const
 	{
@@ -27,13 +28,13 @@ template<typename T> inline T vmax(T a, T b) { return a > b ? a : b; }
 
 void pngrimAccurate(Image& img)
 {
-	const unsigned w = img.width();
-	const unsigned h = img.height();
+	const int w = (int)img.width();
+	const int h = (int)img.height();
 	Matrix<unsigned char> solid(w, h);
 	std::vector<Pos> P, Q, R;
 
-	for(unsigned y = 0; y < h; ++y)
-		for(unsigned x = 0; x < w; ++x)
+	for(int y = 0; y < h; ++y)
+		for(int x = 0; x < w; ++x)
 		{
 			if(alpha(img(x, y)))
 				solid(x, y) = 1;
@@ -44,9 +45,9 @@ void pngrimAccurate(Image& img)
 				for(int oy = -1; oy <= 1; ++oy)
 					for(int ox = -1; ox <= 1; ++ox)
 					{
-						const unsigned xn = int(x) + ox;
-						const unsigned yn = int(y) + oy;
-						if(xn < w && yn < h && alpha(img(xn, yn)))
+						const int xn = x + ox;
+						const int yn = y + oy;
+						if(xn >= 0 && yn >= 0 && xn < w && yn < h && alpha(img(xn, yn)))
 							++p.nb;
 					}
 
@@ -73,15 +74,15 @@ void pngrimAccurate(Image& img)
 
 			for(int oy = -1; oy <= 1; ++oy)
 			{
-				const unsigned y = int(p.y) + oy;
-				if(y < h)
+				const int y = int(p.y) + oy;
+				if(y >= 0 && y < h)
 				{
 					for(int ox = -1; ox <= 1; ++ox)
 					{
 						if(oy || ox)
 						{
-							const unsigned x = int(p.x) + ox;
-							if(x < w)
+							const int x = int(p.x) + ox;
+							if(x >= 0 && x < w)
 							{
 								if(solid(x, y))
 								{
@@ -116,8 +117,8 @@ void pngrimAccurate(Image& img)
 			for(int oy = -1; oy <= 1; ++oy)
 				for(int ox = -1; ox <= 1; ++ox)
 				{
-					const unsigned xn = int(p.x) + ox;
-					const unsigned yn = int(p.y) + oy;
+					const size_t xn = p.x + ox;
+					const size_t yn = p.y + oy;
 					if(xn < w && yn < h && solid(xn, yn))
 						++p.nb;
 				}
@@ -129,14 +130,14 @@ void pngrimAccurate(Image& img)
 
 void pngrimFast(Image& img)
 {
-	const unsigned w = img.width();
-	const unsigned h = img.height();
+	const int w = (int)img.width();
+	const int h = (int)img.height();
 	const unsigned inf = 0x7fffffff;
 	Matrix<unsigned> dist(w, h);
 
-	unsigned numtrans = 0;
-	for(unsigned y = 0; y < h; ++y)
-		for(unsigned x = 0; x < w; ++x)
+	size_t numtrans = 0;
+	for(int y = 0; y < h; ++y)
+		for(int x = 0; x < w; ++x)
 		{
 			const unsigned isTrans = !alpha(img(x, y));
 			dist(x, y) = isTrans;
@@ -146,17 +147,17 @@ void pngrimFast(Image& img)
 	todo.reserve(numtrans);
 
 	// distance transform, X direction
-	for(unsigned y = 0; y < h; ++y)
+	for(int y = 0; y < h; ++y)
 	{
 		unsigned * const row = &dist(0, y);
 		unsigned d = inf;
-		for(unsigned x = 0; x < w; ++x)
+		for(int x = 0; x < w; ++x)
 			if(row[x])
 				row[x] = ++d;
 			else
 				d = 0;
 		d = inf;
-		for(unsigned x = w-1; x; --x)
+		for(int x = w-1; x; --x)
 			if(const unsigned val = row[x])
 				row[x] = vmin(++d, val);
 			else
@@ -164,10 +165,10 @@ void pngrimFast(Image& img)
 	}
 
 	// distance transform, Y direction
-	for(unsigned x = 0; x < w; ++x)
+	for(int x = 0; x < w; ++x)
 	{
 		unsigned d = dist(x, 0);
-		for(unsigned y = 0; y < h; ++y)
+		for(int y = 0; y < h; ++y)
 		{
 			const unsigned val = dist(x, y);
 			if(val >= d)
@@ -176,7 +177,7 @@ void pngrimFast(Image& img)
 				d = val;
 		}
 		d = dist(x, h-1);
-		for(unsigned y = h-1; y; --y)
+		for(int y = h-1; y; --y)
 		{
 			const unsigned val = dist(x, y);
 			if(val >= d)
@@ -187,8 +188,8 @@ void pngrimFast(Image& img)
 	}
 
 	// Use distance as heuristic for pixel processing order
-	for(unsigned y = 0; y < h; ++y)
-		for(unsigned x = 0; x < w; ++x)
+	for(size_t y = 0; y < h; ++y)
+		for(size_t x = 0; x < w; ++x)
 			if(unsigned d = dist(x, y))
 				todo.push_back(Pos(x, y, d));
 	std::sort(todo.begin(), todo.end());
@@ -200,12 +201,12 @@ void pngrimFast(Image& img)
 
 		for(int oy = -1; oy <= 1; ++oy)
 		{
-			const unsigned y = int(p.y) + oy;
+			const size_t y = (p.y) + oy;
 			if(y < h)
 			{
 				for(int ox = -1; ox <= 1; ++ox)
 				{
-					const unsigned x = int(p.x) + ox;
+					const size_t x = (p.x) + ox;
 					if(x < w)
 					{
 						if((ox || oy) && !dist(x, y))
@@ -229,3 +230,84 @@ void pngrimFast(Image& img)
 	}
 }
 
+
+void processImage(Image& img, bool fast)
+{
+	if(fast)
+		pngrimFast(img);
+	else
+		pngrimAccurate(img);
+}
+
+void processFile(const char *fn, bool fast, bool qoi)
+{
+	Image img;
+	if(!img.load(fn))
+	{
+		printf("File not processed: %s\n", fn);
+		return;
+	}
+
+	std::string ofn;
+	const char *sep = strrchr(fn, '/');
+	const char *dot = strrchr(fn, '.');
+#ifdef _WIN32
+	{
+		const char *bs = strrchr(fn, '\\');
+		sep = std::max(sep, bs);
+	}
+#endif
+	if(dot > sep)
+	{
+		ofn.assign(fn, dot - fn);
+	}
+	else
+		ofn = fn;
+
+	ofn += (qoi ? ".qoi" : ".png");
+
+	printf("Processing %s ... ", fn);
+	fflush(stdout);
+	processImage(img, fast);
+	printf("saving [%s] ... ", ofn.c_str());
+	fflush(stdout);
+
+	bool ok = qoi
+		? img.writeQOI(ofn.c_str())
+		: img.writePNG(ofn.c_str());
+
+	if(ok)
+		printf("OK\n");
+	else
+		printf("Failed to write!\n");
+}
+
+
+int main(int argc, char **argv)
+{
+	if(argc <= 1)
+	{
+		printf("Usage: ./pngrim [--fast] [--png] file1.png [fileX.png ...]\n");
+		printf("Load PNG files, outputs in QOI format by default. \n");
+		printf("Warning: --png modifies files in place!\n");
+		return 2;
+	}
+
+	int begin = 1;
+	bool fast = false, qoi = true;
+	if(!strcmp(argv[begin], "--fast"))
+	{
+		++begin;
+		fast = true;
+	}
+	if(!strcmp(argv[begin], "--png"))
+	{
+		++begin;
+		qoi = false;
+	}
+
+	for(int i = begin; i < argc; ++i)
+		processFile(argv[i], fast, qoi);
+
+	return 0;
+}
