@@ -8,12 +8,11 @@ template <typename T> class Matrix
 {
 private:
 	std::vector<T> _v;
-	size_t _shift;
 	size_t _w;
 	size_t _h;
 
 public:
-	Matrix() : _shift(0), _w(0), _h(0) {}
+	Matrix() : _w(0), _h(0) {}
 	Matrix(size_t w, size_t h) { resize(w, h); }
 	~Matrix() {}
 
@@ -25,7 +24,7 @@ public:
 
 	void clear()
 	{
-		_w = _h = _shift = 0;
+		_w = _h = 0;
 		_v.clear();
 	}
 
@@ -38,27 +37,18 @@ public:
 		}
 		_w = w;
 		_h = h;
-		size_t newsize = 1;
-		size_t sh = 0;
 
-		while(newsize < w)
-		{
-			newsize <<= 1;
-			++sh;
-		}
-		_shift = sh;
-
-		_v.resize(newsize * _h);
+		_v.resize(w*h);
 	}
 
 	inline T& operator()(size_t x, size_t y)
 	{
-		return _v[(y << _shift) | x];
+		return _v[_w * y + x];
 	}
 
 	inline const T& operator()(size_t x, size_t y) const
 	{
-		return _v[(y << _shift) | x];
+		return _v[_w * y + x];
 	}
 
 	inline const T& getMirrored(int x, int y) const

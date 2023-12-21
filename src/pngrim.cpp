@@ -294,7 +294,7 @@ int main(int argc, char **argv)
 	}
 
 	int begin = 1;
-	bool fast = false, qoi = true;
+	bool fast = false, qoi = false;
 	if(!strcmp(argv[begin], "--fast"))
 	{
 		++begin;
@@ -304,6 +304,11 @@ int main(int argc, char **argv)
 	{
 		++begin;
 		qoi = false;
+	}
+	if(!strcmp(argv[begin], "--qoi"))
+	{
+		++begin;
+		qoi = true;
 	}
 
 	for(int i = begin; i < argc; ++i)

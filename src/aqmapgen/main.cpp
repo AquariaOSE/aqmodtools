@@ -20,6 +20,8 @@ inline unsigned mkcol(unsigned char r, unsigned char g, unsigned char b, unsigne
 	return r | (g << 8) | (b << 16) | (a << 24);
 }
 
+#define WHITE 240
+
 // floor to next power of 2 (not changed if already power of 2)
 inline unsigned flp2(unsigned x)
 {
@@ -66,7 +68,7 @@ void processImage(Image& img, int radius, float sigma, float scale)
 		float scaledW = (float(w) * scale) + 0.0001f; // ward off rounding errors
 		float scaledH = (float(h) * scale) + 0.0001f;
 		tmp.resize((size_t)scaledW, (size_t)scaledH);
-		stbir_resize_float_generic(ma.data(), w, h, 0, tmp.data(), tmp.width(), tmp.height(), 0, 1,
+		stbir_resize_float_generic(ma.data(), w, h, w*sizeof(float), tmp.data(), tmp.width(), tmp.height(), tmp.width()*sizeof(float), 1,
 			STBIR_ALPHA_CHANNEL_NONE, 0, STBIR_EDGE_CLAMP, STBIR_FILTER_CUBICBSPLINE, STBIR_COLORSPACE_LINEAR, NULL);
 	}
 	else
@@ -85,10 +87,10 @@ void processImage(Image& img, int radius, float sigma, float scale)
 	const size_t halfMarginY = (hh - tmp.height()) / 2;
 
 	img.resize(ww, hh);
-	img.fill(0);
+	img.fill(mkcol(WHITE, WHITE, WHITE, 0));
 	for(size_t y = 0; y < tmp.height(); ++y)
 		for(size_t x = 0; x < tmp.width(); ++x)
-			img(x + halfMarginX, y + halfMarginY) = mkcol(240, 240, 240, int(255*tmp(x, y)));
+			img(x + halfMarginX, y + halfMarginY) = mkcol(WHITE, WHITE, WHITE, int(255*tmp(x, y)));
 }
 
 
